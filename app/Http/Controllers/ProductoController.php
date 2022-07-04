@@ -16,11 +16,7 @@ class ProductoController extends Controller
     public function __construct()
     {
         $this->middleware('auth:api');
-        // $this->middleware(['role:admin', 'permission:listar.productos|crear.productos|obtener.producto|
-        // actualizar.producto|eliminar.producto']);
-        // $this->middleware(['role:vendedor','permission:listar.productos|crear.productos|obtener.producto|
-        // actualizar.producto|eliminar.producto']);
-        
+        $this->middleware(['role:cliente', 'permission:listar.productos|actualizar.producto']);
     }
 
     public function index()

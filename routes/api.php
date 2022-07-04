@@ -29,29 +29,25 @@ Route::group([
     Route::post('login', [AuthController::class,'login']);
     Route::post('logout',[AuthController::class,'logout']);
     Route::post('refresh',[AuthController::class,'refresh']);
-    Route::post('me',[AuthController::class,'me'])->middleware(['auth']);
+    Route::post('me',[AuthController::class,'me'])->middleware(['jwt.auth']);
     Route::post('register',[AuthController::class,'register']);
-    
 });
-
-
-
 
 //CRUD usuarios
-Route::group(['middleware' => ['role:admin', 'permission:ver.usuarios|crear.usuarios|obtener.usuarios|
-actualizar.usuarios|eliminar.usuarios']], function(){
-    Route::controller(UserController::class)->group(function(){
-        Route::get('User/get','index');//->middleware('canAccess'); // mostrar usuarios
-        Route::post('User/create','store'); //Crear un nuevo usuario 
-        Route::put('User/update/{id}','update'); //actualizar usuario
-        Route::get('User/show/{id}','show'); // Obtener los datos de un usuario
-        Route::delete('User/delete/{id}','destroy'); //eliminar usuario 
+Route::group(['role:admin', 'permission:ver.usuarios|crear.usuarios|obtener.usuarios|
+actualizar.usuarios|eliminar.usuarios'], function(){
+    Route::group(['middleware' => ['admin.access']], function(){
+        Route::controller(UserController::class)->group(function(){
+            Route::get('User/get','index');//->middleware('canAccess'); // mostrar usuarios
+            Route::post('User/create','store'); //Crear un nuevo usuario 
+            Route::put('User/update/{id}','update'); //actualizar usuario
+            Route::get('User/show/{id}','show'); // Obtener los datos de un usuario
+            Route::delete('User/delete/{id}','destroy'); //eliminar usuario 
+        });
     });
+    
 });
     
-
-
-
 Route::group(['middleware' => ['role:admin|vendedor','permission:listar.productos|crear.productos|obtener.producto|
 // actualizar.producto|eliminar.producto']], function () {
     Route::controller(ProductoController::class)->group(function(){
@@ -64,6 +60,13 @@ Route::group(['middleware' => ['role:admin|vendedor','permission:listar.producto
     
     });
 });
+
+Route::group(['middleware' => ['client.access']], function (){
+    Route::get('productos',[ProductoController::class,'index']); //Mostrar los productos
+    Route::put('productos/{id}',[ProductoController::class,'update']); //actualizar producto
+});
+
+
 
 
 

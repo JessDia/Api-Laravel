@@ -2,13 +2,16 @@
 
 namespace App\Http\Middleware;
 
-
 use Closure;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Route;
+use JWTAuth;
 
-class AdminMiddleware
+
+class clientMiddleware
 {
     /**
      * Handle an incoming request.
@@ -19,22 +22,17 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
+
         $blockAccess = true;
 
-        if (Auth()->user()->admin === ("admin"))$blockAccess = false;
+        if (Auth()->user()->cliente === ("cliente"))$blockAccess = false;
         if (!$blockAccess) {
             return response()->json([
-                'message' => 'No eres administrador',
+                'message' => 'usuario no autorizado',
             ]);
         }
+
+        
         return $next($request);
     }
-    // $blockAccess = true;
-    //     if (Auth::user()->role == 'admin'){
-    //         $blockAccess= false;
-    //     }else {
-    //         return response()->json([
-    //             'message' => 'No eres administrador',
-    //         ]);
-    //     }
 }
