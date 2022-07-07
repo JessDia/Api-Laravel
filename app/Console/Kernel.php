@@ -4,6 +4,11 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use App\Models\Producto;
+use Illuminate\Database\Eloquent\Model;
+use Mail;
+use App\Mail\SendMail;
+
 
 class Kernel extends ConsoleKernel
 {
@@ -15,7 +20,24 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->call(function () {
+            $stockData = [
+                'title' => 'Correo de cafeteriakonecta@gmail.com',
+                'body' => 'El stock de los productos esta a punto de agotarse, se recomienda surtir la tienda.'
+            ];
+    
+            Mail::to('inforomacionstock@gmail.com')->send(new SendMail ($stockData));
+            
+        })->everyMinute()->when(function () {
+    
+            $productos = Producto::where('stock','<=','10')->get();
+            
+            if(count($productos) == 0){
+                return false;
+            }
+            return true;
+        });;
+    
     }
 
     /**
@@ -29,4 +51,5 @@ class Kernel extends ConsoleKernel
 
         require base_path('routes/console.php');
     }
+
 }

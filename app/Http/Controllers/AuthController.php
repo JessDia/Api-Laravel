@@ -8,25 +8,26 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use Illuminate\Database\Seeder;
+use Illuminate\Foundation\Http\FormRequest;
 
 class AuthController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth:api', ['except' => ['login', 'register']]);
-
     }
 
+    //------------------ Función para iniciar sesión---------------------------
     public function login(Request $request)
     {
         $request->validate([
             'email' => 'required|string|email',
-            'password' => 'required|string',
+            'password' => 'required|digits_between:6,8',
             
         ]);
         $credentials = $request->only('email', 'password');
 
-        
         $token = Auth::attempt($credentials);
         if (!$token) {
             return response()->json([
@@ -38,7 +39,7 @@ class AuthController extends Controller
         $user = Auth::user();
         return response()->json([
         'status' => 'success',
-        'user' => $user,
+        'user' => $user->assignRole($request->Role),
         'authorisation' => [
         'token' => $token,
         'type' => 'bearer',
@@ -46,17 +47,30 @@ class AuthController extends Controller
         ]);
     }
 
+    //Función para Mostrar datos
     public function me(){
     return response()->json(auth()->user());
     }
 
 
-    public function logout()
+    //Función para cerrar sesión
+    public function logout(Request $request)
     {
-        auth()->logout();
-        return response()->json(['message' => 'Su sesión ha finalizado exitosamente']);
+        //Validamos que se nos envie el token
+        $validator = Validator::make($request->only('token'), [
+            'token' => 'required'
+        ]);
+         //Si falla la validación
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->messages()], 400);
+        } else if (Auth::invalidate($request->token)) {
+            auth()->logout();
+            return response()->json(['message' => 'Su sesión ha finalizado exitosamente']);
+        }
+        
     }
 
+    //Función para refrescar el token
     public function refresh(){
         return response()->json([
             'status' => 'success',
@@ -69,15 +83,22 @@ class AuthController extends Controller
     }
 
 
+    //Función para registrar
     public function register(Request $request){
+        $user = new User;
+
         $validator = validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required|string|email|max:100|unique:users',
-            'password' => 'required|string|min:6',
+            'password' => 'required|digits_between:6,8',
+            //'Role' => 'nullable',
+            
         ]);
+        
         if($validator->fails()){
             return response()->json($validator->errors()->toJson(),400);
         }
+
         $user = User::create(array_merge(
             $validator->validate(),
             ['password' => bcrypt($request->password)],
@@ -85,31 +106,17 @@ class AuthController extends Controller
         
         
         $token = Auth::fromUser($user);
-
+        $request->Role = 'cliente';
         $user->assignRole("cliente");
+        
 
         return response()->json([
         'message'=> 'Usuario registrado exitosamente',
         'user' => $user,
+        //'Role' => $request->Role,
         'token' => $token,
+        
         ],201);
-        
-        // switch (Auth::user()->type_user) {
-        //     case ('1'):
-        //         $user->assignRole("admin");
-        //         break;
-        //     case ('2'):
-        //         $user->assignRole("vendedor");
-        //     break;
-        //     case ('3'):
-        //     $user->assignRole("cliente");
-        //     default:
-        //     return "Debe seleccionar un tipo de usuario valido";
-        //     break;
-        // }
-
-        
-
-        
+    
     }
 }

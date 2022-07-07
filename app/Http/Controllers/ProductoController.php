@@ -13,15 +13,10 @@ class ProductoController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function __construct()
-    {
-        $this->middleware('auth:api');
-        $this->middleware(['role:cliente', 'permission:listar.productos|actualizar.producto']);
-    }
-
+    
+     //------------------------- Funcion para listar los productos
     public function index()
     {
-        //Listamos todos los productos
         $productos = Producto::all();
         return response()->json([
             'status' => 'success',
@@ -36,12 +31,14 @@ class ProductoController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+
+     //------------------------Función para crear un nuevo producto
     public function store(Request $request)
     {
         $request->validate([
-            'nombre' => 'required|string|max:50',
-            'precio' =>'required',
-            'stock'=>'required',
+            'nombre' => 'required|string|max:50|unique:productos',
+            'precio' =>'required|digits_between:3,5',
+            'stock'=>'required|digits_between:1,3',
         ]);
         
         $productos = new Producto();
@@ -64,6 +61,7 @@ class ProductoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+    //------------------------ Funcion para filtrar producto por id
     public function show($id)
     {
         $productos= Producto::find($id);
@@ -73,15 +71,42 @@ class ProductoController extends Controller
         ]);
     }
 
-    // public function edit(Request $request, $id){
-    //     $productos = User::find($id);
-    //     $productos->stock = $request->stock;
-    //     $productos->save();
-    //     return response()->json([
-    //         'message' => 'Producto actualizado con exito',
-    //         'productos' => $productos
-    //     ]);
-    // }
+    //------------------------------------funcion para actualizar stock de productos
+    public function stock(Request $request, $id)
+    {
+        $request->validate([
+            'stock'=>'required',
+        ]);
+        $productos= Producto::find($id);
+        $productos->stock = $request->stock;
+        $productos->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'stock actualizado con exito',
+            'productos' => $productos,
+        ]);
+        
+    }
+
+    //----------------Función para generar compra y modificar stock
+    public function compra(Request $request, $id)
+    {
+        $request->validate([
+            'cantidad'=>'required',
+        ]);
+        $productos= Producto::find($id);
+        $productos->stock = $productos->stock-$request->cantidad;
+        $productos->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Venta exitosa',
+            'productos' => $productos,
+        ]);
+        
+    }
+
 
 
     /**
@@ -91,12 +116,13 @@ class ProductoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+    //------------------Función para actualizar productos
     public function update(Request $request, $id)
     {
         $request->validate([
             'nombre' => 'required|string|max:50',
-            'precio' =>'required',
-            'stock'=>'required',
+            'precio' =>'required|digits_between:3,5',
+            'stock'=>'required|digits_between:1,3',
         ]);
         $productos= Producto::find($id);
         $productos->nombre = $request->nombre;
@@ -118,6 +144,7 @@ class ProductoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+    //---------------------------------Funcion para eliminar producto
     public function destroy($id)
     {
         $productos = Producto::find($id);

@@ -3,8 +3,12 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\PermissionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,7 +25,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-//Rutas para la autenticación
+// --------------------------------------- Autenticación ----------------------------------------
 Route::group([
     'middleware' => 'api',
     'prefix' => 'auth'
@@ -29,42 +33,43 @@ Route::group([
     Route::post('login', [AuthController::class,'login']);
     Route::post('logout',[AuthController::class,'logout']);
     Route::post('refresh',[AuthController::class,'refresh']);
-    Route::post('me',[AuthController::class,'me'])->middleware(['jwt.auth']);
+    Route::post('me',[AuthController::class,'me']);
     Route::post('register',[AuthController::class,'register']);
 });
 
-//CRUD usuarios
-Route::group(['role:admin', 'permission:ver.usuarios|crear.usuarios|obtener.usuarios|
-actualizar.usuarios|eliminar.usuarios'], function(){
-    Route::group(['middleware' => ['admin.access']], function(){
-        Route::controller(UserController::class)->group(function(){
-            Route::get('User/get','index');//->middleware('canAccess'); // mostrar usuarios
-            Route::post('User/create','store'); //Crear un nuevo usuario 
-            Route::put('User/update/{id}','update'); //actualizar usuario
-            Route::get('User/show/{id}','show'); // Obtener los datos de un usuario
-            Route::delete('User/delete/{id}','destroy'); //eliminar usuario 
-        });
-    });
-    
-});
-    
-Route::group(['middleware' => ['role:admin|vendedor','permission:listar.productos|crear.productos|obtener.producto|
-// actualizar.producto|eliminar.producto']], function () {
-    Route::controller(ProductoController::class)->group(function(){
-        Route::get('productos','index'); //Mostrar los productos
-        Route::post('productos','store'); //Crear productos
-        // Route::patch('productos/{id}', 'edit'); //editar producto
-        Route::get('productos/{id}','show');//Mostrar producto por id
-        Route::put('productos/{id}','update'); //actualizar producto
-        Route::delete('productos/{id}','destroy'); //eliminar producto
-    
-    });
+
+// --------------------------------------- CRUD de roles ----------------------------------------
+Route::group(['middleware' => ['auth:api', 'is_admin']], function(){
+    Route::get('role', [RoleController::class, 'index']); //--Mostrar
+    Route::post('role',[RoleController::class,'store']); //--Crear
+    Route::put('role/{id}',[RoleController::class,'update']); // -- Actualizar
+    Route::delete('role/{id}',[RoleController::class,'destroy']); //--Eliminar
 });
 
-Route::group(['middleware' => ['client.access']], function (){
-    Route::get('productos',[ProductoController::class,'index']); //Mostrar los productos
-    Route::put('productos/{id}',[ProductoController::class,'update']); //actualizar producto
+
+// --------------------------------------- CRUD de usuarios ----------------------------------------
+Route::group(['middleware' => ['auth:api','is_admin']],function(){
+    Route::get('User/get',[UserController::class,'index']); //--Mostrar
+    Route::post('User/create',[UserController::class,'store']); //Crear 
+    Route::get('User/show/{id}',[UserController::class,'show']); //Obtener por id
+    Route::put('update/{id}',[UserController::class,'updateRol']); //Actualizar rol de usuario
+    Route::put('User/update/{id}',[UserController::class,'update']); //actualizar datos usuario
+    Route::delete('User/delete/{id}',[UserController::class,'destroy']); //Eliminar
 });
+
+// --------------------------------------- CRUD de productos ----------------------------------------
+Route::group(['middleware' => ['auth:api']], function(){
+Route::get('productos',[ProductoController::class,'index']); //Mostrar 
+Route::post('productos',[ProductoController::class,'store'])->middleware(['is_autorizado']); //Crear 
+Route::get('productos/{id}',[ProductoController::class,'show']);//Mostrar producto por id
+Route::put('productos/{id}',[ProductoController::class,'update'])->middleware(['is_autorizado']); //actualizar 
+Route::delete('productos/{id}',[ProductoController::class,'destroy'])->middleware(['is_autorizado']); //eliminar 
+Route::put('comprar/{id}',[ProductoController::class,'compra']); //------------Comprar
+Route::put('actualizar/stock/{id}',[ProductoController::class,'stock'])->middleware(['is_autorizado']);//actualizar stock
+});
+
+
+
 
 
 

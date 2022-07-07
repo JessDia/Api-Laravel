@@ -4,14 +4,10 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
-use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Route;
-use JWTAuth;
+use Illuminate\Support\Facades\Auth;
 
 
-class clientMiddleware
+class vendedorMiddleware
 {
     /**
      * Handle an incoming request.
@@ -23,15 +19,12 @@ class clientMiddleware
     public function handle(Request $request, Closure $next)
     {
 
-        $blockAccess = true;
-
-        if (Auth()->user()->cliente === ("cliente"))$blockAccess = false;
-        if (!$blockAccess) {
+        if(!(Auth::user()->roles[0]['name']==="vendedor")){
             return response()->json([
                 'message' => 'usuario no autorizado',
             ]);
         }
-
+        
         
         return $next($request);
     }

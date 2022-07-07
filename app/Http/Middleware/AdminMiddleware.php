@@ -4,9 +4,13 @@ namespace App\Http\Middleware;
 
 
 use Closure;
+use JWTAuth;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Facades\Auth;
+
+
 
 class AdminMiddleware
 {
@@ -19,22 +23,19 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        $blockAccess = true;
-
-        if (Auth()->user()->admin === ("admin"))$blockAccess = false;
-        if (!$blockAccess) {
+    
+        // return response()->json([
+        // 'message' => (!Auth::user()->Role=="admin"),
+        // ]);
+        
+        
+        if(!(Auth::user()->roles[0]['name']=="admin")){
             return response()->json([
-                'message' => 'No eres administrador',
+                'message' => 'usuario no autorizado',
             ]);
         }
         return $next($request);
+        
     }
-    // $blockAccess = true;
-    //     if (Auth::user()->role == 'admin'){
-    //         $blockAccess= false;
-    //     }else {
-    //         return response()->json([
-    //             'message' => 'No eres administrador',
-    //         ]);
-    //     }
+    
 }

@@ -63,7 +63,7 @@ class Kernel extends HttpKernel
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-        'jwt.verify' => \App\Http\Middleware\JwtMiddleware::class,
+        'jwt.verify' => \App\Http\Middleware\Jwt1Middleware::class,
         'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
         /**JWT*/
         'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
@@ -74,7 +74,8 @@ class Kernel extends HttpKernel
         'permission' => \Spatie\Permission\Middlewares\PermissionMiddleware::class,
         'role_or_permission' => \Spatie\Permission\Middlewares\RoleOrPermissionMiddleware::class,
 
-        'admin.access' => \App\Http\Middleware\AdminMiddleware::class,
-        'client.access' => \App\Http\Middleware\clientMiddleware::class,
+        'is_admin' => \App\Http\Middleware\AdminMiddleware::class,
+        'is_vendedor' => \App\Http\Middleware\vendedorMiddleware::class,
+        'is_autorizado' => \App\Http\Middleware\AdminVendedorMiddleware::class,
     ];
 }
