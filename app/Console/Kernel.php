@@ -26,6 +26,7 @@ class Kernel extends ConsoleKernel
                 'body' => 'El stock de los productos esta a punto de agotarse, se recomienda surtir la tienda.'
             ];
     
+            //Da orden para enviar
             Mail::to('inforomacionstock@gmail.com')->send(new SendMail ($stockData));
             
         })->everyMinute()->when(function () {

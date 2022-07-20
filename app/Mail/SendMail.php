@@ -32,7 +32,7 @@ class SendMail extends Mailable
     public function build()
     {
         return $this->subject('Correo de inforomacionstock@gmail.com')
-                    ->view('mails.stockMail');
+                    ->view('mails.stockMail'); //plantilla
     }
 
     

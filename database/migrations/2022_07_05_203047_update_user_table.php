@@ -18,6 +18,7 @@ return new class extends Migration
         //     $table->string('Role')->default('cliente');
         //     $table->foreign('Role')->references('id')->on('mat_categ');
         // });
+        
 
         
     }

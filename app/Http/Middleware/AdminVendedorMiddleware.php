@@ -11,13 +11,7 @@ use Illuminate\Support\Facades\Auth;
 
 class AdminVendedorMiddleware
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @return mixed
-     */
+    
     public function handle(Request $request, Closure $next)
     {
         if(!(Auth::user()->roles[0]['name']=="admin" || Auth::user()->roles[0]['name']=="vendedor" )){

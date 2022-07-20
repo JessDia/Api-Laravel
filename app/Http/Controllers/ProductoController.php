@@ -8,13 +8,8 @@ use Illuminate\Support\Facades\Validator;
 
 class ProductoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    
-     //------------------------- Funcion para listar los productos
+
+    //Funcion para listar los productos
     public function index()
     {
         $productos = Producto::all();
@@ -24,21 +19,13 @@ class ProductoController extends Controller
         ]);
     }
 
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-
-     //------------------------Función para crear un nuevo producto
+    //Función para crear un nuevo producto
     public function store(Request $request)
     {
         $request->validate([
             'nombre' => 'required|string|max:50|unique:productos',
-            'precio' =>'required|digits_between:3,5',
-            'stock'=>'required|digits_between:1,3',
+            'precio' =>'required|min:3',
+            'stock'=>'required|min:1',
         ]);
         
         $productos = new Producto();
@@ -51,17 +38,11 @@ class ProductoController extends Controller
             'status' => 'success',
             'message' => 'Producto creado con exito',
             'Productos' => $productos,
-            ]);
+        ]);
         
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    //------------------------ Funcion para filtrar producto por id
+    //Funcion para filtrar producto por id
     public function show($id)
     {
         $productos= Producto::find($id);
@@ -71,7 +52,7 @@ class ProductoController extends Controller
         ]);
     }
 
-    //------------------------------------funcion para actualizar stock de productos
+    //Funcion para actualizar stock de productos
     public function stock(Request $request, $id)
     {
         $request->validate([
@@ -89,7 +70,7 @@ class ProductoController extends Controller
         
     }
 
-    //----------------Función para generar compra y modificar stock
+    //Función para generar compra y modificar stock
     public function compra(Request $request, $id)
     {
         $request->validate([
@@ -107,44 +88,21 @@ class ProductoController extends Controller
         
     }
 
-
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    //------------------Función para actualizar productos
+    //Función para actualizar productos
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'nombre' => 'required|string|max:50',
-            'precio' =>'required|digits_between:3,5',
-            'stock'=>'required|digits_between:1,3',
-        ]);
-        $productos= Producto::find($id);
-        $productos->nombre = $request->nombre;
-        $productos->precio = $request->precio;
-        $productos->stock = $request->stock;
-        $productos->save();
+        $productos = Producto::find($id);
+        if(is_null($productos)){
+            return reponse()->json([
+                'message' => 'Producto no encontrado'
+            ],404);
+        }
+        $productos -> update($request -> all());
+        return response($productos,200);
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Producto actualizado con exito',
-            'productos' => $productos,
-        ]);
-        
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    //---------------------------------Funcion para eliminar producto
+    //Funcion para eliminar producto
     public function destroy($id)
     {
         $productos = Producto::find($id);
@@ -154,6 +112,15 @@ class ProductoController extends Controller
             'status' => 'success',
             'message' => 'Producto eliminado con exito',
             'productos' => $productos,
+        ]);
+    }
+
+    //Se verifica si existe un producto con ese mismo nombre 
+    public function existe(Request $request)
+    {
+        $producto= Producto::where('nombre',$request->nombre)->first();
+        return response()->json([
+            'status' => $producto? 1:0, // 1 existe, 0 no existe
         ]);
     }
 }

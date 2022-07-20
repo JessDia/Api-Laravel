@@ -16,19 +16,22 @@ class UserSeeder extends Seeder
     public function run()
     {
         User::create([
-        'name' => 'Jessica Diaz',
+        'name' => 'Jessica',
+        'lastname' => 'Diaz',
         'email' => 'admin@admin.com',
         'password' => '$2y$10$WOC9crKn8fn4bxc/GYzgEeaYmbmXre1TiMC.qXoZVZLmLwwmvaO.G',
         ])->assignRole('admin');
 
         User::create([
-        'name' => 'Duvan Rodriguez',
+        'name' => 'Duvan',
+        'lastname' => 'Rodriguez',
         'email' => 'vendedor@vendedor.com',
         'password' => '$2y$10$WOC9crKn8fn4bxc/GYzgEeaYmbmXre1TiMC.qXoZVZLmLwwmvaO.G',
         ])->assignRole('vendedor');
 
         User::create([
-        'name' => 'Carmen Bedoya',
+        'name' => 'Carmen',
+        'lastname' => 'Bedoya',
         'email' => 'cliente@cliente.com',
         'password' => '$2y$10$WOC9crKn8fn4bxc/GYzgEeaYmbmXre1TiMC.qXoZVZLmLwwmvaO.G',
         ])->assignRole('cliente');

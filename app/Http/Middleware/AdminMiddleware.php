@@ -24,18 +24,12 @@ class AdminMiddleware
     public function handle(Request $request, Closure $next)
     {
     
-        // return response()->json([
-        // 'message' => (!Auth::user()->Role=="admin"),
-        // ]);
-        
-        
         if(!(Auth::user()->roles[0]['name']=="admin")){
             return response()->json([
                 'message' => 'usuario no autorizado',
             ]);
         }
         return $next($request);
-        
     }
     
 }

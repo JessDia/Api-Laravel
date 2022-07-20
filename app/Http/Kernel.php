@@ -77,5 +77,7 @@ class Kernel extends HttpKernel
         'is_admin' => \App\Http\Middleware\AdminMiddleware::class,
         'is_vendedor' => \App\Http\Middleware\vendedorMiddleware::class,
         'is_autorizado' => \App\Http\Middleware\AdminVendedorMiddleware::class,
+
+        'guest' => \App\Http\Middleware\CORS::class,
     ];
 }

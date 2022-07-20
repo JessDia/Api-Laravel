@@ -28,7 +28,6 @@ class RoleSeeder extends Seeder
 
         //Permisos del CRUD de productos
         Permission::create(['name' => 'listar.productos'])->syncRoles($admin, $vendedor, $cliente);
-        // Permission::create(['name' => 'editar. producto'])->syncRoles($admin, $cliente); //funcion pendiente por crear 
         Permission::create(['name' => 'crear.productos'])->syncRoles($admin, $vendedor);
         Permission::create(['name' => 'obtener.producto'])->syncRoles($admin, $vendedor);
         Permission::create(['name' => 'actualizar.producto'])->syncRoles($admin, $vendedor, $cliente);
@@ -36,7 +35,6 @@ class RoleSeeder extends Seeder
 
         //Permisos del CRUD de usuarios
         Permission::create(['name' => 'ver.usuarios'])->syncRoles($admin);
-        // Permission::create(['name' => 'editar.usuarios'])->syncRoles($admin); //funcion pendiente de crear
         Permission::create(['name' => 'crear.usuarios'])->syncRoles($admin);
         Permission::create(['name' => 'obtener.usuarios'])->syncRoles($admin);
         Permission::create(['name' => 'actualizar.usuarios'])->syncRoles($admin);
