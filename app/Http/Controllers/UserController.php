@@ -26,6 +26,7 @@ class UserController extends Controller
             'name' => 'required|string',
             'lastname' => 'required|string',
             'email' => 'required|string|email|max:100|unique:users',
+            'roles' => 'required|int',
             'password' => 'required|digits_between:6,8',
         ]);
         
@@ -34,6 +35,7 @@ class UserController extends Controller
         $user->lastname = $request->lastname;
         $user->email = $request->email;
         $user->password = bcrypt($request->password);
+        $user->syncRoles($request->roles);
         $user->save();
 
         return response()->json([
@@ -86,7 +88,7 @@ class UserController extends Controller
             'name' => 'string',
             'lastname' => 'string',
             'email' => 'string|email|max:100',
-            'roles' => 'string'
+            'roles' => 'int'
             //'password' => 'digits_between:6,8',
         ]);
         
@@ -119,6 +121,7 @@ class UserController extends Controller
     }
 
 
+    //Validamos si el correo ya existe 
     public function existe(Request $request)
     {
         $user= User::where('email',$request->email)->first();

@@ -80,9 +80,10 @@ class RoleController extends Controller
 
     public function existe(Request $request)
     {
-        $role= Role::where('role',$request->role)->first();
+        $role= Role::where('name',$request->name)->first();
         return response()->json([
             'status' => $role? 1:0, // 1 existe, 0 no existe
         ]);
     }
+
 }

@@ -111,11 +111,5 @@ class AuthController extends Controller
         ],201);
     }
 
-    public function existe(Request $request)
-    {
-        $user= User::where('email',$request->email)->first();
-        return response()->json([
-            'status' => $user? 1:0, // 1 existe, 0 no existe
-        ]);
-    }
+
 }

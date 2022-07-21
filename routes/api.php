@@ -35,7 +35,6 @@ Route::group([
     Route::post('refresh',[AuthController::class,'refresh']);
     Route::get('me',[AuthController::class,'me']);
     Route::post('register',[AuthController::class,'register']); 
-    Route::post('email/existe',[AuthController::class,'existe']);
 });
 
 
@@ -58,8 +57,9 @@ Route::group(['middleware' => ['auth:api','is_admin']],function(){
     //Route::put('update/{id}',[UserController::class,'updateRol']); //Actualizar rol de usuario 
     Route::put('User/update/{id}',[UserController::class,'update']); //actualizar datos usuario 
     Route::delete('User/delete/{id}',[UserController::class,'destroy']); //Eliminar 
-    Route::post('User/existe',[UserController::class,'existe']); //validar correo
+    
 });
+Route::post('User/existe',[UserController::class,'existe']); //validar correo existente
 
 
 
